@@ -6,19 +6,17 @@ const dbPath = connectionString.replace('file:', '')
 
 // @ts-ignore
 if (typeof Bun !== 'undefined') {
-  const bunAdapter = 'prisma-adapter-bun-sqlite';
-  const bunSqlite = 'bun:sqlite';
-  const { PrismaBunSqlite } = require(bunAdapter);
-  const { Database } = require(bunSqlite);
+  const { PrismaBunSqlite } = eval('require')('prisma-adapter-bun-sqlite');
+  const { Database } = eval('require')('bun:sqlite');
   const sqlite = new Database(dbPath);
   const adapter = new PrismaBunSqlite(sqlite);
   prisma = new PrismaClient({ adapter });
 } else {
-  const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3')
-  const Database = require('better-sqlite3')
-  const sqlite = new Database(dbPath)
-  const adapter = new PrismaBetterSqlite3(sqlite)
-  prisma = new PrismaClient({ adapter })
+  const { PrismaBetterSqlite3 } = eval('require')('@prisma/adapter-better-sqlite3');
+  const Database = eval('require')('better-sqlite3');
+  const sqlite = new Database(dbPath);
+  const adapter = new PrismaBetterSqlite3(sqlite);
+  prisma = new PrismaClient({ adapter });
 }
 
 async function main() {
