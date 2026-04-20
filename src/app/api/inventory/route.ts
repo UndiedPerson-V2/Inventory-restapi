@@ -22,8 +22,8 @@ export async function GET(request: Request) {
       orderBy: { name: 'asc' },
     });
     return NextResponse.json(products);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch inventory' }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ error: 'Failed to fetch inventory', details: error.message }, { status: 500 });
   }
 }
 
@@ -55,6 +55,10 @@ export async function POST(request: Request) {
     if (error.code === 'P2002') {
       return NextResponse.json({ error: 'SKU must be unique' }, { status: 400 });
     }
-    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to create product', 
+      details: error.message,
+      code: error.code 
+    }, { status: 500 });
   }
 }
