@@ -10,11 +10,16 @@ const dbPath = connectionString.replace('file:', '')
 // @ts-ignore
 if (typeof Bun !== 'undefined') {
   // --- BUN RUNTIME (Local) ---
-  const { PrismaBunSqlite } = require('prisma-adapter-bun-sqlite')
-  const { Database } = require('bun:sqlite')
-  const sqlite = new Database(dbPath)
-  const adapter = new PrismaBunSqlite(sqlite)
-  prisma = globalForPrisma.prisma || new PrismaClient({ adapter, log: ['query'] })
+  // We use a variable to hide these from Turbopack's static analysis
+  const bunAdapter = 'prisma-adapter-bun-sqlite';
+  const bunSqlite = 'bun:sqlite';
+  
+  const { PrismaBunSqlite } = require(bunAdapter);
+  const { Database } = require(bunSqlite);
+  
+  const sqlite = new Database(dbPath);
+  const adapter = new PrismaBunSqlite(sqlite);
+  prisma = globalForPrisma.prisma || new PrismaClient({ adapter, log: ['query'] });
 } else {
   // --- NODE RUNTIME (Vercel) ---
   try {
