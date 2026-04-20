@@ -1,10 +1,23 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaBunSqlite } from 'prisma-adapter-bun-sqlite'
 
+let prisma: PrismaClient
 const connectionString = process.env.DATABASE_URL || 'file:./dev.db'
-const adapter = new PrismaBunSqlite({ url: connectionString })
+const dbPath = connectionString.replace('file:', '')
 
-const prisma = new PrismaClient({ adapter })
+// @ts-ignore
+if (typeof Bun !== 'undefined') {
+  const { PrismaBunSqlite } = require('prisma-adapter-bun-sqlite')
+  const { Database } = require('bun:sqlite')
+  const sqlite = new Database(dbPath)
+  const adapter = new PrismaBunSqlite(sqlite)
+  prisma = new PrismaClient({ adapter })
+} else {
+  const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3')
+  const Database = require('better-sqlite3')
+  const sqlite = new Database(dbPath)
+  const adapter = new PrismaBetterSqlite3(sqlite)
+  prisma = new PrismaClient({ adapter })
+}
 
 async function main() {
   const products = [
