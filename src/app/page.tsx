@@ -75,10 +75,10 @@ export default function InventoryDashboard() {
         fetchInventory();
       } else {
         const errData = await res.json();
-        alert(errData.error || 'Validation Error');
+        throw new Error(errData.error || 'Validation Error');
       }
-    } catch (err) {
-      alert('Network Error');
+    } catch (err: any) {
+      alert(err.message || 'Network Error');
     }
   };
 
